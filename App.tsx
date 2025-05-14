@@ -140,16 +140,16 @@ function App(): React.JSX.Element {
               }
 
               // Tambahkan pengecekan akurasi GPS
-              if (position.coords.accuracy > 50) {
-                Alert.alert(
-                  'Akurasi GPS Rendah',
-                  'Mohon pastikan Anda berada di area terbuka dan GPS memiliki sinyal yang baik.',
-                  [{ text: 'OK' }]
-                );
-                return;
-              }
+              // if (position.coords.accuracy > 50) {
+              //   Alert.alert(
+              //     'Akurasi GPS Rendah',
+              //     'Mohon pastikan Anda berada di area terbuka dan GPS memiliki sinyal yang baik.',
+              //     [{ text: 'OK' }]
+              //   );
+              //   return;
+              // }
 
-              console.log('GPS aktif dan valid');
+              // console.log('GPS aktif dan valid');
             },
             (error) => {
               if (!isSubscribed) {
