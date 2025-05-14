@@ -10,10 +10,10 @@ import { StyleSheet, PermissionsAndroid, Platform, Alert, NativeModules, View, T
 import { WebView } from 'react-native-webview';
 import Geolocation from 'react-native-geolocation-service';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { BackHandler } from 'react-native';
 
 const { DeveloperMode } = NativeModules;
 
-// Deklarasi type untuk global.nativeDebuggerConnected
 declare global {
   var nativeDebuggerConnected: boolean;
 }
@@ -47,19 +47,17 @@ function App(): React.JSX.Element {
               console.error('Error checking developer mode:', error);
               return;
             }
-            console.log('Developer mode enabled:', isEnabled);
-            if (isEnabled && !isDevModeAlertShown) {
-              console.log('Showing developer mode alert');
-              setIsDevModeAlertShown(true);
+    
+            if (isEnabled) {
+              console.log('Developer mode is ON');
               Alert.alert(
-                'Mode Developer Aktif',
-                'Mohon nonaktifkan mode developer untuk keamanan aplikasi',
+                'Akses Ditolak',
+                'Aplikasi tidak dapat digunakan saat mode developer aktif. Mohon nonaktifkan mode developer.',
                 [
                   {
                     text: 'OK',
                     onPress: () => {
-                      console.log('Alert closed');
-                      setIsDevModeAlertShown(false);
+                      BackHandler.exitApp(); // Tutup aplikasi langsung
                     },
                   },
                 ],
@@ -122,8 +120,36 @@ function App(): React.JSX.Element {
       try {
         if (Platform.OS === 'android') {
           Geolocation.getCurrentPosition(
-            (_position) => {
-              console.log('GPS aktif');
+            (position) => {
+              // Tambahkan pengecekan mock location
+              if (position.mocked) {
+                Alert.alert(
+                  'Fake GPS Terdeteksi',
+                  'Aplikasi tidak dapat digunakan dengan Fake GPS. Mohon nonaktifkan Fake GPS Anda.',
+                  [
+                    {
+                      text: 'OK',
+                      onPress: () => {
+                        BackHandler.exitApp();
+                      },
+                    },
+                  ],
+                  { cancelable: false }
+                );
+                return;
+              }
+
+              // Tambahkan pengecekan akurasi GPS
+              if (position.coords.accuracy > 50) {
+                Alert.alert(
+                  'Akurasi GPS Rendah',
+                  'Mohon pastikan Anda berada di area terbuka dan GPS memiliki sinyal yang baik.',
+                  [{ text: 'OK' }]
+                );
+                return;
+              }
+
+              console.log('GPS aktif dan valid');
             },
             (error) => {
               if (!isSubscribed) {
@@ -162,7 +188,9 @@ function App(): React.JSX.Element {
       }
     };
 
-    const intervalId = setInterval(checkGpsStatus, 5000);
+    // Tingkatkan frekuensi pengecekan menjadi setiap 3 detik
+    const intervalId = setInterval(checkGpsStatus, 3000);
+    checkGpsStatus(); // Cek pertama kali
 
     return () => {
       isSubscribed = false;
