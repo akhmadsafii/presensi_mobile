@@ -202,7 +202,7 @@ function App(): React.JSX.Element {
     <View style={styles.container}>
       <WebView 
         ref={webViewRef}
-        source={{ uri: 'https://presensi.eksperimen.online/' }}
+        source={{ uri: 'https://ptdsn.co.id/projectdsunalsut/' }}
         style={styles.webview}
         javaScriptEnabled={true}
         domStorageEnabled={true}
@@ -213,7 +213,7 @@ function App(): React.JSX.Element {
         allowsLinkPreview={true}
         mediaCapturePermissionGrantType="grant"
         onShouldStartLoadWithRequest={(request) => {
-          if (request.url.startsWith('https://presensi.eksperimen.online/')) {
+          if (request.url.startsWith('https://ptdsn.co.id/projectdsunalsut/')) {
             return true;
           }
           return false;

@@ -84,6 +84,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        archivesBaseName = "TekaTime_${versionName}_${new Date().format('yyyyMMdd')}"
     }
     signingConfigs {
         debug {
@@ -107,6 +108,14 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def formattedDate = new Date().format('yyyyMMdd')
+            def buildType = variant.buildType.name
+            outputFileName = "TekaTime_${defaultConfig.versionName}_${formattedDate}_${buildType}.apk"
         }
     }
 
